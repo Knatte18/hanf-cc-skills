@@ -10,6 +10,9 @@ Creates the file if it doesn't exist.
 """
 
 import sys
+from pathlib import Path
+
+from hanf_lock import lock_backlog
 
 
 def main():
@@ -28,8 +31,9 @@ def main():
     else:
         entry = f"- [ ] **{text.strip()}**\n\n"
 
-    with open(file_path, "a", encoding="utf-8") as f:
-        f.write(entry)
+    with lock_backlog(file_path):
+        with open(file_path, "a", encoding="utf-8") as f:
+            f.write(entry)
 
     print(f"Added: - [ ] **{title if ':' in text else text.strip()}**")
 

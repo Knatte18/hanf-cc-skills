@@ -76,6 +76,8 @@ build/
 
 ---
 
-## Updating a single skill
+## Updating skills
 
-Edit the spec file in `doc/`, then run `hanf-skill-build` to regenerate into `build/`. Then run `hanf-skill-deploy` to deploy to `~/.claude/`.
+Edit spec files in `doc/`, then run `hanf-skill-build` to regenerate into `build/`. Then run `hanf-skill-deploy` to deploy to `~/.claude/`.
+
+By default, the build is **incremental**: it uses `git diff --name-only HEAD -- doc/` to detect changed sources and only regenerates their corresponding outputs. Use `hanf-skill-build full` for a complete clean + rebuild.

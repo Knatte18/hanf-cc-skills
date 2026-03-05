@@ -1,5 +1,6 @@
 ---
 description: "Implement all planned tasks, committing after each"
+model: sonnet
 ---
 
 Read and follow ~/.claude/skills/workflow.md
@@ -15,7 +16,7 @@ Implement all planned tasks. Commits after **each** completed task.
 1. Loop through planned tasks using `--include-planned` (those with `plan:` sub-bullet, priority: `[>]` → `[p]` → `[ ]`).
    - Use `python ~/.claude/scripts/hanf_task_get.py --include-planned doc/backlog.md` to extract the next task.
 2. For each task:
-   1. Read the plan file.
+   1. Read the plan file and all files listed in `## Files`. Run the same staleness check as `hanf-do-planned-task` (using `started:` from plan frontmatter); if changes found, re-read affected files and revise plan steps.
    2. Implement each `- [ ]` step, marking as `- [x]`.
       - Use `python ~/.claude/scripts/hanf_task_complete.py <plan-file>` to mark steps.
    3. If a step fails: mark `- [!]`, block the task, move to the next task.

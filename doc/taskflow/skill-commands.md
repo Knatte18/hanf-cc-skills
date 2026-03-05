@@ -8,11 +8,14 @@ Defines the 8 hanf-* commands for task management and git operations.
 
 Discuss a backlog task. Does **not** write a plan.
 
-- Finds task from `doc/backlog.md`: by name if provided, otherwise first `[>]`, then first `[ ]`.
+- Finds task from `doc/backlog.md`: by name if provided, otherwise first `[>]`, then first `[ ]`. Skips `[N]` tasks (already claimed by another thread).
+- **Claims the task** by changing its state to `[N]` where N is the lowest unused digit (1-9) among current `[N]` states in the backlog. A `[>]` task keeps its priority meaning — it just gets numbered like any other.
+- Writes a `started: <ISO 8601 UTC timestamp>` sub-bullet to the task in `doc/backlog.md`, recording when discussion began.
 - If the task has a `plan:` sub-bullet, reads and summarizes the existing plan, then continues discussion from there.
 - Reads relevant codebase sections.
 - Asks clarifying questions about approach, constraints, and design.
 - Discussion continues until the user calls `hanf-finalize-plan`.
+- Do not enter plan mode or write plan files. This command is discussion only.
 
 ---
 
@@ -21,11 +24,14 @@ Discuss a backlog task. Does **not** write a plan.
 Write a plan from the current discussion.
 
 - Takes task name from argument or infers from conversation.
-- Creates `.llm/plans/YYYY-MM-DD-HHMM-<slug>.md` (using current UTC date and time) with:
+- Creates `.llm/plans/YYYY-MM-DD-HHMMSS-<slug>.md` (using current UTC date and time) with:
+  - **YAML frontmatter:** `started:` (copied from the task's `started:` sub-bullet in `doc/backlog.md`) and `finished:` (current UTC timestamp, matches filename timestamp)
   - **Context:** summary of discussion and key decisions
+  - **Files:** flat list of file paths the plan expects to modify (used for staleness detection and fast implementation start)
   - **Steps:** concrete, actionable `- [ ]` items
 - Adds `plan:` sub-bullet in `doc/backlog.md` linking to the plan file.
 - Changes task state to `[p]` (planned) in `doc/backlog.md`.
+- Steps must use concrete actions (e.g. `Regenerate build output following BUILD.md`), never `/hanf-*` commands or `~/.claude/skills/` references — the executor treats these as user-invocable, stalling execution.
 
 ---
 
@@ -33,8 +39,12 @@ Write a plan from the current discussion.
 
 Implement the next planned task. Does **not** commit.
 
+**Frontmatter:** `model: sonnet`
+
 - Finds next planned task using `--include-planned`: first `[>]` with `plan:`, then first `[p]` with `plan:`, then first `[ ]` with `plan:`.
 - Reads the plan file.
+- Reads all files listed in `## Files` as initial context.
+- **Staleness check:** reads the `started:` timestamp from the plan's YAML frontmatter and runs `git log --since=<started-timestamp> -- <file1> <file2> ...` for the listed files. If changes are found, re-reads affected files and revises plan steps before proceeding.
 - Implements each `- [ ]` step, marking as `- [x]` immediately after completion.
 - If a step fails: marks `- [!]` and blocks the task via script.
 - Runs build + test after all steps (see `skill-build`).
@@ -47,9 +57,11 @@ Implement the next planned task. Does **not** commit.
 
 Implement all planned tasks. Commits after **each** completed task.
 
+**Frontmatter:** `model: sonnet`
+
 - Loops through planned tasks using `--include-planned` (those with `plan:` sub-bullet, priority: `[>]` → `[p]` → `[ ]`).
 - For each task:
-  1. Read the plan file.
+  1. Read the plan file and all files listed in `## Files`. Run the same staleness check as `hanf-do-planned-task` (using `started:` from plan frontmatter); if changes found, re-read affected files and revise plan steps.
   2. Implement each `- [ ]` step, marking as `- [x]`.
   3. If a step fails: mark `- [!]`, block the task, move to the next task.
   4. Run build + test.
@@ -64,8 +76,8 @@ Implement all planned tasks. Commits after **each** completed task.
 Show task status and let the user pick one to discuss.
 
 - Reads `doc/backlog.md`.
-- Prints status summary: `Status: 1 prioritized | 2 planned | 3 unplanned | 1 blocked`.
-- Groups open tasks by state: prioritized `[>]`, planned `[p]`, unplanned `[ ]`, blocked `[!]`.
+- Prints status summary: `Status: 1 prioritized | 1 in discussion | 2 planned | 3 unplanned | 1 blocked`.
+- Groups open tasks by state: prioritized `[>]`, in discussion `[N]`, planned `[p]`, unplanned `[ ]`, blocked `[!]`.
 - Shows plan file path and blocked reason if applicable.
 - User picks a task number to start discussion (proceeds as `hanf-discuss-task`).
 
@@ -78,7 +90,7 @@ Add an item to a file with `- [ ] **Title**` format.
 - Takes file path and `Title: description` as parameters.
 - If the input contains a colon, the part before becomes the bold title and the part after becomes an indented description.
 - If no colon, the entire input becomes the bold title with no description.
-- Works on both `doc/backlog.md` and `.llm/plans/YYYY-MM-DD-HHMM-<slug>.md`.
+- Works on both `doc/backlog.md` and `.llm/plans/YYYY-MM-DD-HHMMSS-<slug>.md`.
 - Appends the formatted entry followed by a blank line.
 
 ---

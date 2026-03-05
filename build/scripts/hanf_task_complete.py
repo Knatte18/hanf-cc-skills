@@ -13,8 +13,11 @@ Used for backlog tasks where doc/changelog.md already records the completion.
 
 import re
 import sys
+from pathlib import Path
 
-CHECKBOX_PATTERN = re.compile(r"^(\s*- \[)([ >p])(\] )")
+from hanf_lock import lock_backlog
+
+CHECKBOX_PATTERN = re.compile(r"^(\s*- \[)([ >p1-9])(\] )")
 
 
 def main():
@@ -31,41 +34,42 @@ def main():
 
     file_path = args[0]
 
-    try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            lines = f.readlines()
-    except FileNotFoundError:
-        print(f"File not found: {file_path}", file=sys.stderr)
-        sys.exit(1)
+    with lock_backlog(file_path):
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+        except FileNotFoundError:
+            print(f"File not found: {file_path}", file=sys.stderr)
+            sys.exit(1)
 
-    for i, line in enumerate(lines):
-        match = CHECKBOX_PATTERN.match(line)
-        if match:
-            if delete_mode:
-                task_indent = len(line) - len(line.lstrip())
-                end = i + 1
-                while end < len(lines):
-                    subsequent = lines[end]
-                    if subsequent.strip() == "":
-                        end += 1
-                        break
-                    subsequent_indent = len(subsequent) - len(subsequent.lstrip())
-                    if subsequent_indent > task_indent:
-                        end += 1
-                    else:
-                        break
-                deleted_line = line.strip()
-                del lines[i:end]
-                with open(file_path, "w", encoding="utf-8") as f:
-                    f.writelines(lines)
-                print(f"Deleted: {deleted_line}")
-            else:
-                completed_line = CHECKBOX_PATTERN.sub(r"\1x\3", line)
-                lines[i] = completed_line
-                with open(file_path, "w", encoding="utf-8") as f:
-                    f.writelines(lines)
-                print(f"Completed: {completed_line.strip()}")
-            sys.exit(0)
+        for i, line in enumerate(lines):
+            match = CHECKBOX_PATTERN.match(line)
+            if match:
+                if delete_mode:
+                    task_indent = len(line) - len(line.lstrip())
+                    end = i + 1
+                    while end < len(lines):
+                        subsequent = lines[end]
+                        if subsequent.strip() == "":
+                            end += 1
+                            break
+                        subsequent_indent = len(subsequent) - len(subsequent.lstrip())
+                        if subsequent_indent > task_indent:
+                            end += 1
+                        else:
+                            break
+                    deleted_line = line.strip()
+                    del lines[i:end]
+                    with open(file_path, "w", encoding="utf-8") as f:
+                        f.writelines(lines)
+                    print(f"Deleted: {deleted_line}")
+                else:
+                    completed_line = CHECKBOX_PATTERN.sub(r"\1x\3", line)
+                    lines[i] = completed_line
+                    with open(file_path, "w", encoding="utf-8") as f:
+                        f.writelines(lines)
+                    print(f"Completed: {completed_line.strip()}")
+                sys.exit(0)
 
     print("No incomplete items found.", file=sys.stderr)
     sys.exit(1)

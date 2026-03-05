@@ -17,6 +17,9 @@ Exit code 0 if found, 1 if no incomplete items.
 
 import re
 import sys
+from pathlib import Path
+
+from hanf_lock import lock_backlog
 
 CHECKBOX_PATTERN = re.compile(r"^(\s*- \[)(.)(\] )")
 
@@ -35,12 +38,13 @@ def main():
 
     file_path = args[0]
 
-    try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            lines = f.readlines()
-    except FileNotFoundError:
-        print(f"File not found: {file_path}", file=sys.stderr)
-        sys.exit(1)
+    with lock_backlog(file_path):
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+        except FileNotFoundError:
+            print(f"File not found: {file_path}", file=sys.stderr)
+            sys.exit(1)
 
     prioritized_match = find_task(lines, ">")
     if prioritized_match is not None:
