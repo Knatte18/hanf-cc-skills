@@ -32,7 +32,7 @@ Write a plan from the current discussion.
   - **Steps:** concrete, actionable `- [ ]` items
 - Adds `plan:` sub-bullet in `doc/backlog.md` linking to the plan file.
 - Changes task state to `[p]` (planned) in `doc/backlog.md`.
-- Steps must use concrete actions (e.g. `Regenerate build output following BUILD.md`), never `/task-*` commands or `~/.claude/skills/` references — the executor treats these as user-invocable, stalling execution.
+- Steps must use concrete actions (e.g. `Regenerate build output following BUILD.md`), never `/task-*` commands or `@taskmill:` skill references — the executor treats these as requiring user invocation or skill loading, stalling execution.
 - Do not edit any files other than `doc/backlog.md` and `.llm/plans/`. No code edits, no build changes.
 
 ---
@@ -49,7 +49,7 @@ Implement the next planned task. Does **not** commit.
 - **Staleness check:** reads the `started:` timestamp from the plan's YAML frontmatter and runs `git log --since=<started-timestamp> -- <file1> <file2> ...` for the listed files. If changes are found, re-reads affected files and revises plan steps before proceeding.
 - Implements each `- [ ]` step, marking as `- [x]` immediately after completion.
 - If a step fails: marks `- [!]` and blocks the task via script.
-- Runs build + test after all steps (see `skill-build`).
+- Runs build + test after all steps (see `@taskmill:csharp-build`).
 - If all steps complete: deletes task from `doc/backlog.md` (via `--delete`), updates `doc/changelog.md`.
 - Does **not** commit — user calls `mill-commit` when ready.
 
@@ -101,7 +101,7 @@ Add an item to a file with `- [ ] **Title**` format.
 
 Commit and push. No rebase.
 
-- See `git/skill-git` for full commit rules.
+- See `@taskmill:git` for full commit rules.
 - Stages files individually, commits with title + bullet-point format, pushes.
 - Sets upstream if needed: `git push --set-upstream origin <branch>`.
 
@@ -135,6 +135,24 @@ Retry the first blocked task.
 - If a step fails again: marks `- [!]` and stays blocked.
 - If all steps complete: deletes task from `doc/backlog.md` (via `--delete`), updates changelog.
 - Does **not** commit.
+
+---
+
+## mill-build
+
+Build skills from `doc/` specs into `build/taskmill/` plugin structure.
+
+Read and follow `BUILD.md`.
+
+---
+
+## mill-deploy
+
+Deploy the built plugin by reinstalling it from the local marketplace.
+
+- Run `claude plugin uninstall taskmill@taskmill` (ignore errors if not yet installed).
+- Run `claude plugin install taskmill@taskmill`.
+- Print confirmation that the plugin was reinstalled.
 
 ---
 

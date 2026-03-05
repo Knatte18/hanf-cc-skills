@@ -1,22 +1,20 @@
 ---
-description: "Deploy built skills to ~/.claude/ (or specified target)"
-argument-hint: "[target-path]"
+description: "Deploy built skills by reinstalling the taskmill plugin"
 ---
 
 ## Behavior
 
-Copy all generated files from `build/` to the deploy target.
-
-- Default target: `~/.claude/` (global install)
-- Optional argument: a target path (e.g., a project's `.claude/` directory)
+Reinstall the taskmill plugin from the local marketplace.
 
 ### Steps
 
-1. Determine target: use argument if provided, otherwise `~/.claude/`.
-2. Copy `build/skills/*` → `<target>/skills/`
-3. Copy `build/commands/*` → `<target>/commands/`
-4. Copy `build/scripts/*` → `<target>/scripts/`
-5. Read `build/CLAUDE.md`. Ensure its content is present in `<target>/CLAUDE.md`:
-   - If `<target>/CLAUDE.md` does not exist, create it with the content.
-   - If it exists, check whether the core skill references are already present. If not, append them.
-6. Print a summary of deployed files and the target path.
+1. Run `claude plugin uninstall taskmill@taskmill` (ignore errors if not yet installed).
+2. Run `claude plugin install taskmill@taskmill`.
+3. Print confirmation that the plugin was reinstalled.
+
+### First-time setup
+
+If the marketplace has not been added yet:
+
+1. Run `claude plugin marketplace add c:/Code/taskmill` (the repo root containing `.claude-plugin/marketplace.json`).
+2. Then proceed with install as above.

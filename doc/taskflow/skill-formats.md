@@ -100,6 +100,6 @@ The `## Files` section lists files the plan expects to modify. Used for stalenes
 Steps are marked `[x]` progressively as CC completes them, and `[!]` if a step fails.
 
 **Plan step rules:**
-- Steps must describe concrete actions, not reference `/task-*` slash commands or `~/.claude/skills/` files. The LLM executor may interpret these as requiring user invocation or skill loading, stalling execution.
-- Bad: `Run /mill-build` or `Follow ~/.claude/skills/csharp-build.md`
+- Steps must describe concrete actions, not reference `/task-*` slash commands or `@taskmill:` skill names. The LLM executor may interpret these as requiring user invocation or skill loading, stalling execution.
+- Bad: `Run /mill-build` or `Follow @taskmill:csharp-build`
 - Good: `Regenerate build output following BUILD.md`
