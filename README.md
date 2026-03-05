@@ -102,6 +102,29 @@ For the task skills to work correctly, Claude Code needs permission to run tools
 
 The `allow` list grants the tool permissions the skills rely on. The `deny` list is a safety net against destructive commands.
 
+### Hook: Read CLAUDE.md on Every Prompt
+
+Claude Code loads `~/.claude/CLAUDE.md` into context but does not always follow the instructions inside it (e.g., reading referenced skill files). A `UserPromptSubmit` hook fixes this by reminding the model at the start of every prompt:
+
+```json
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Read ~/.claude/CLAUDE.md and follow its instructions before responding.'"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+Merge this into your existing `~/.claude/settings.json`.
+
 ---
 
 ## Acknowledgments
