@@ -148,11 +148,13 @@ Read and follow `BUILD.md`.
 
 ## mill-deploy
 
-Deploy the built plugin by reinstalling it from the local marketplace.
+Print the commands to reinstall the plugin. Do NOT run them — they must be run outside Claude Code in a terminal.
 
-- Run `claude plugin uninstall taskmill@taskmill` (ignore errors if not yet installed).
-- Run `claude plugin install taskmill@taskmill`.
-- Print confirmation that the plugin was reinstalled.
+- Print: `claude plugin uninstall taskmill@taskmill`
+- Print: `claude plugin install taskmill@taskmill`
+- Note: if `claude` is not on PATH, use `npx @anthropic-ai/claude-code` instead of `claude`.
+- Remind the user to restart Claude Code after running them.
+- For first-time setup, also print: `claude plugin marketplace add c:/Code/taskmill`
 
 ---
 
