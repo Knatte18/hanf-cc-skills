@@ -24,9 +24,9 @@ Generate the plugin manifest:
   "name": "taskmill",
   "description": "Task management, workflow orchestration, and coding skills for Claude Code",
   "version": "1.0.0",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "author": {
-    "name": "hanf"
+    "name": "Knatte18"
   }
 }
 ```
@@ -83,6 +83,7 @@ build/taskmill/
 │   ├── discuss.md               (one file per command section)
 │   ├── finalize.md
 │   ├── do.md
+│   ├── do-commit.md
 │   ├── do-all.md
 │   ├── list.md
 │   ├── add.md

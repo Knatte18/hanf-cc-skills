@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-03-07 **Revised git and workflow skills**
+- Replaced blanket "never operate on main" rule with nuanced branch policy: never switch TO main, can create new branches, committing on main requires `--onmain` override
+- Added `do-commit` command: checks branch, prompts to create new branch if on main, then implements next planned task and commits
+- Simplified `do-all` to loop `do-commit` with upfront branch check
+- Updated `commit` command with `--onmain` flag support and refusal behavior
+- Regenerated affected build outputs: `git/SKILL.md`, `commit.md`, `do-commit.md`, `do-all.md`
+
 ## 2026-03-06 **Shortened plugin command names**
 - Dropped `task-`/`mill-` prefixes from all plugin commands — now invoked as `/taskmill.discuss`, `/taskmill.finalize`, `/taskmill.do`, `/taskmill.do-all`, `/taskmill.list`, `/taskmill.add`, `/taskmill.retry`, `/taskmill.commit`, `/taskmill.log`
 - `task-plan` renamed to `finalize` (more descriptive of what it does)

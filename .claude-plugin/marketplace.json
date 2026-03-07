@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "Task management, workflow orchestration, and coding skills for Claude Code",
   "owner": {
-    "name": "hanf"
+    "name": "Knatte18"
   },
   "plugins": [
     {
@@ -12,7 +12,7 @@
       "description": "Task management, workflow orchestration, and coding skills for Claude Code",
       "version": "1.0.0",
       "author": {
-        "name": "hanf"
+        "name": "Knatte18"
       },
       "source": "./build/taskmill",
       "category": "productivity"

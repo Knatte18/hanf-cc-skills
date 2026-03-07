@@ -55,20 +55,30 @@ Implement the next planned task. Does **not** commit.
 
 ---
 
-## do-all
+## do-commit
 
-Implement all planned tasks. Commits after **each** completed task.
+Implement the next planned task and commit. Combines `do` then `commit`.
 
 **Frontmatter:** `model: sonnet`
 
-- Loops through planned tasks using `--include-planned` (those with `plan:` sub-bullet, priority: `[>]` → `[p]` → `[ ]`).
-- For each task:
-  1. Read the plan file and all files listed in `## Files`. Run the same staleness check as `task-do` (using `started:` from plan frontmatter); if changes found, re-read affected files and revise plan steps.
-  2. Implement each `- [ ]` step, marking as `- [x]`.
-  3. If a step fails: mark `- [!]`, block the task, move to the next task.
-  4. Run build + test.
-  5. Delete task from `doc/backlog.md` (via `--delete`), update `doc/changelog.md`.
-  6. Commit and push (using `commit` workflow).
+- **Branch check first:** run `git branch --show-current`. If on `main`/`master`:
+  1. Derive a branch name from the task title slug (e.g. `feature/revise-git-workflow`).
+  2. Prompt: *"You're on **main**. Create branch **`<name>`** and continue there? You can also provide a different name."*
+  3. Wait for user confirmation or an alternative name.
+  4. Create the branch (`git checkout -b <name>`) and switch to it.
+- Run `do` (implement the next planned task, mark steps, run build + test, update backlog and changelog).
+- Run `commit` (stage individually, commit with title + bullet-point format, push).
+
+---
+
+## do-all
+
+Implement all planned tasks, committing after each.
+
+**Frontmatter:** `model: sonnet`
+
+- **Branch check first:** same as `do-commit` — if on `main`/`master`, prompt to create a new branch, wait for confirmation, create and switch to it. One branch for the entire batch.
+- Loop: run `do-commit` until no planned tasks remain (task_get.py --include-planned returns exit code 1).
 - Stops when no planned tasks remain.
 
 ---
@@ -101,7 +111,11 @@ Add an item to a file with `- [ ] **Title**` format.
 
 Commit and push. No rebase.
 
+**Frontmatter:** `argument-hint: "[--onmain] [message]"`
+
 - See `@taskmill:git` for full commit rules.
+- **If on `main`/`master` and `--onmain` is not in the argument:** refuse to commit. Suggest a branch name based on the staged changes or recent context (e.g. `feature/revise-git-workflow`), prompt the user to confirm or provide an alternative name, then stop. Do not create the branch — `commit` only commits.
+- **If on `main`/`master` and `--onmain` is in the argument:** proceed normally.
 - Stages files individually, commits with title + bullet-point format, pushes.
 - Sets upstream if needed: `git push --set-upstream origin <branch>`.
 
