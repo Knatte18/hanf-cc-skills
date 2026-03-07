@@ -104,3 +104,17 @@ Usage: task_claim.py <file-path> [task-name]
 Finds the target task (by name if provided, otherwise first `[>]`, then first `[ ]` — same as `task_get.py` default priority). Changes its state to `[N]` where N is the lowest unused digit (1-9) among current `[N]` states in the file. Adds a `started: <ISO 8601 UTC timestamp>` sub-bullet to the task.
 
 Output: the claimed task line. Exit code 0 if claimed, 1 if no eligible task found.
+
+---
+
+## task_plan.py
+
+Mark a task as planned and link its plan file.
+
+```
+Usage: task_plan.py <file-path> <task-name> <plan-path>
+```
+
+Finds the target task by name (case-insensitive substring match against the task line). Changes its state to `[p]`. Adds or replaces a `plan: <plan-path>` sub-bullet, inserting it after any existing sub-bullets (or directly below the task line if none exist). If a `plan:` sub-bullet already exists, it is replaced in-place.
+
+Output: the updated task line. Exit code 0 on success, 1 if task not found.

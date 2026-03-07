@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-03-07 **Simplified backlog task handling**
+- Added `task_plan.py` script: marks a task `[p]` and adds/replaces `plan:` sub-bullet using filelock; used by `finalize` command instead of direct Edit on backlog.md
+- Added `validate-backlog.sh` PreToolUse hook: reads tool input JSON from stdin, blocks Edit/Write calls targeting `backlog.md`
+- Added `hooks/hooks.json` with PreToolUse entries for Edit and Write matchers
+- Updated `finalize` command to use `task_plan.py` instead of direct backlog edits
+- Added explicit "never Edit/Write backlog.md" rule to `formats` and `workflow` skills
+- Extended `BUILD.md` to describe hooks/ output directory
+
 ## 2026-03-07 **Revised git and workflow skills**
 - Replaced blanket "never operate on main" rule with nuanced branch policy: never switch TO main, can create new branches, committing on main requires `--onmain` override
 - Added `do-commit` command: checks branch, prompts to create new branch if on main, then implements next planned task and commits

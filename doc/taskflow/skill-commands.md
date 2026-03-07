@@ -30,10 +30,9 @@ Write a plan from the current discussion.
   - **Context:** summary of discussion and key decisions
   - **Files:** flat list of file paths the plan expects to modify (used for staleness detection and fast implementation start)
   - **Steps:** concrete, actionable `- [ ]` items
-- Adds `plan:` sub-bullet in `doc/backlog.md` linking to the plan file.
-- Changes task state to `[p]` (planned) in `doc/backlog.md`.
+- Run `python ${CLAUDE_PLUGIN_ROOT}/scripts/task_plan.py doc/backlog.md "<task-name>" <plan-path>` to change state to `[p]` and add/replace the `plan:` sub-bullet.
 - Steps must use concrete actions (e.g. `Regenerate build output following BUILD.md`), never `/task-*` commands or `@taskmill:` skill references — the executor treats these as requiring user invocation or skill loading, stalling execution.
-- Do not edit any files other than `doc/backlog.md` and `.llm/plans/`. No code edits, no build changes.
+- Do not edit any files other than `.llm/plans/`. No code edits, no build changes. All backlog mutations go through scripts.
 
 ---
 

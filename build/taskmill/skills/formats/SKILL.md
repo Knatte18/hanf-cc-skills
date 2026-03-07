@@ -51,6 +51,8 @@ Completed tasks are deleted from the backlog (via `task_complete.py --delete`) s
 - `started: <ISO 8601 UTC timestamp>` — records when discussion began (written by `discuss`)
 - `blocked: <reason>` — explains why a task is blocked
 
+**Mutation rule:** Never use Edit or Write on `doc/backlog.md`. All mutations must go through scripts in `scripts/` (e.g. `task_plan.py`, `task_complete.py`, `task_block.py`). Reading with Read is allowed.
+
 ---
 
 ## doc/changelog.md (tracked)

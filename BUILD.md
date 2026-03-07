@@ -65,6 +65,11 @@ Each `## task_*` section in `doc/taskflow/skill-scripts.md` → `build/taskmill/
 
 Implement according to the behavioral spec: parameters, selection priority, output, exit codes.
 
+### Hooks → `build/taskmill/hooks/`
+
+Copy `doc/taskflow/hooks.json` → `build/taskmill/hooks/hooks.json` verbatim.
+Copy `doc/taskflow/validate-backlog.sh` → `build/taskmill/hooks/validate-backlog.sh` verbatim.
+
 ---
 
 ## 3. Marketplace manifest
@@ -102,8 +107,11 @@ build/taskmill/
 │   ├── csharp-build/SKILL.md
 │   ├── csharp-comments/SKILL.md
 │   └── csharp-testing/SKILL.md
-└── scripts/
-    └── task_*.py                (one per script)
+├── scripts/
+│   └── task_*.py                (one per script)
+└── hooks/
+    ├── hooks.json               (PreToolUse hook config — copied from doc/taskflow/)
+    └── validate-backlog.sh      (blocks direct edits to backlog.md — copied from doc/taskflow/)
 ```
 
 ---
