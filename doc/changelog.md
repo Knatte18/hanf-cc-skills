@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-03-07 **Added add-discuss command**
+- New command adds a task to the backlog via `task_add.py`, claims it via `task_claim.py`, then proceeds with the standard discuss flow
+
 ## 2026-03-07 **Simplified backlog task handling**
 - Added `task_plan.py` script: marks a task `[p]` and adds/replaces `plan:` sub-bullet using filelock; used by `finalize` command instead of direct Edit on backlog.md
 - Added `validate-backlog.sh` PreToolUse hook: reads tool input JSON from stdin, blocks Edit/Write calls targeting `backlog.md`
