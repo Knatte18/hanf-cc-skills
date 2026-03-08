@@ -13,5 +13,8 @@ Generate a work-journal entry from recent git commits. Prints to stdout only —
    - **Guidance (optional):** free-text for emphasis, length, or focus. Examples: `"Emphasize the refactoring work"`, `"3 sentences"`, `brief`, `detailed`. Quoted strings are treated as guidance.
 2. Run `git log --oneline --since=<cutoff>` to gather commits since the cutoff.
 3. Generate plain narrative prose — dense, technical, work-journal style. No headings, no bullet points, no markdown formatting.
-4. Print the entry to stdout. Do NOT read or write any files.
-5. Do NOT read `doc/changelog.md`.
+4. Default length: 3-4 sentences. User can override with guidance like `detailed`, `brief`, or `5 sentences`.
+5. Start directly with the substance. No preamble like "Today's work...", "This session...", "The main focus was...".
+6. Write for a non-technical audience (CEO, stakeholders). Describe work in domain terms. No file paths, no variable/parameter names, no class names, no code references.
+7. Print the entry to stdout. Do NOT read or write any files.
+8. Do NOT read `doc/changelog.md`.
