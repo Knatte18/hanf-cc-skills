@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-03-12 **Added task-name targeting to task_complete.py and task_block.py**
+- `task_complete.py` now accepts an optional `task_name` positional argument for case-insensitive substring matching via `find_task(name=...)`
+- `task_block.py` now accepts `--name` flag for the same targeting
+- Without a name, both scripts use `find_task(states=[' ', '>', 'p'])` state-priority search (fixes discrepancy where code used `find_incomplete()` instead)
+- Fixes bug where `--delete` could not target `[p]` tasks and would delete unrelated `[ ]` tasks first
+
 ## 2026-03-12 **Renamed all skills to mill- prefix**
 - Added `mill-` prefix to all 29 skill `name:` fields to avoid Claude Code short-alias collisions (e.g. `/commit` → `/mill-commit`)
 - Updated BUILD.md mapping: `skill-<name>.md` → `build/taskmill/skills/mill-<name>/SKILL.md`

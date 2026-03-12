@@ -1,25 +1,32 @@
 #!/usr/bin/env python3
-"""Mark the first incomplete item as done, or delete it."""
+"""Mark an incomplete item as done, or delete it."""
 
 import argparse
 import sys
 
 from lib.state import change_state
 from lib.locking import locked
-from lib.parsing import read_lines, find_incomplete, delete_block
+from lib.parsing import read_lines, find_task, delete_block
 from lib.io import write_file, is_backlog
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Complete the first incomplete task')
+    parser = argparse.ArgumentParser(description='Complete an incomplete task')
     parser.add_argument('file', help='Path to the task file')
+    parser.add_argument('task_name', nargs='?', default=None,
+                        help='Task name (case-insensitive substring match)')
     parser.add_argument('--delete', action='store_true',
                         help='Delete the entry instead of marking [x]')
     args = parser.parse_args()
 
     with locked(args.file):
         lines = read_lines(args.file)
-        idx = find_incomplete(lines)
+
+        if args.task_name:
+            idx = find_task(lines, name=args.task_name, top_level_only=False)
+        else:
+            idx = find_task(lines, states=[' ', '>', 'p'], top_level_only=False)
+
         if idx is None:
             print('No incomplete items found.', file=sys.stderr)
             sys.exit(1)

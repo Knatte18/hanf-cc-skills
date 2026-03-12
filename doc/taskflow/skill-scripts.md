@@ -153,13 +153,15 @@ Uses `write_file()` with `normalize=is_backlog(path)`.
 
 ### task_complete.py
 
-Mark the first incomplete item as done.
+Mark an incomplete item as done, or delete it.
 
 ```
-Usage: task_complete.py [--delete] <file-path>
+Usage: task_complete.py [--delete] <file-path> [task-name]
 ```
 
-Calls `find_task(lines, states=[' ', '>', 'p'], top_level_only=False)` — also matches digit states via `is_incomplete()`. Finds the first incomplete item at any indent level (plan sub-steps are indented).
+If `task-name` provided: calls `find_task(lines, name=task_name, top_level_only=False)` — case-insensitive substring match at any indent level.
+
+If no name: calls `find_task(lines, states=[' ', '>', 'p'], top_level_only=False)` — finds the first incomplete item by state priority.
 
 Default: calls `change_state(line, 'x')` to mark done.
 
@@ -171,13 +173,15 @@ Prints the matched item. Exit code 0 if found, 1 if no incomplete items.
 
 ### task_block.py
 
-Mark the first incomplete item as blocked.
+Mark an incomplete item as blocked.
 
 ```
-Usage: task_block.py <file-path> [reason]
+Usage: task_block.py [--name TASK-NAME] <file-path> [reason]
 ```
 
-Calls `find_task(lines, states=[' ', '>', 'p'], top_level_only=False)` — same as `task_complete.py`, also matches digit states.
+If `--name` provided: calls `find_task(lines, name=task_name, top_level_only=False)` — case-insensitive substring match at any indent level.
+
+If no name: calls `find_task(lines, states=[' ', '>', 'p'], top_level_only=False)` — finds the first incomplete item by state priority.
 
 Calls `change_state(line, '!')` to mark blocked.
 

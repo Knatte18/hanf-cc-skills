@@ -1,26 +1,33 @@
 #!/usr/bin/env python3
-"""Mark the first incomplete item as blocked."""
+"""Mark an incomplete item as blocked."""
 
+import argparse
 import sys
 
 from lib.state import change_state
 from lib.locking import locked
-from lib.parsing import read_lines, find_incomplete
+from lib.parsing import read_lines, find_task
 from lib.subbullet import upsert_subbullet
 from lib.io import write_file, is_backlog
 
 
 def main():
-    if len(sys.argv) < 2:
-        print('Usage: task_block.py <file-path> [reason]', file=sys.stderr)
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description='Block an incomplete task')
+    parser.add_argument('file', help='Path to the task file')
+    parser.add_argument('reason', nargs='?', default=None,
+                        help='Reason for blocking')
+    parser.add_argument('--name', default=None,
+                        help='Task name (case-insensitive substring match)')
+    args = parser.parse_args()
 
-    file_path = sys.argv[1]
-    reason = ' '.join(sys.argv[2:]) if len(sys.argv) > 2 else None
+    with locked(args.file):
+        lines = read_lines(args.file)
 
-    with locked(file_path):
-        lines = read_lines(file_path)
-        idx = find_incomplete(lines)
+        if args.name:
+            idx = find_task(lines, name=args.name, top_level_only=False)
+        else:
+            idx = find_task(lines, states=[' ', '>', 'p'], top_level_only=False)
+
         if idx is None:
             print('No incomplete items found.', file=sys.stderr)
             sys.exit(1)
@@ -28,10 +35,10 @@ def main():
         lines[idx] = change_state(lines[idx], '!')
         print(lines[idx].rstrip('\n'))
 
-        if reason:
-            upsert_subbullet(lines, idx, 'blocked', reason)
+        if args.reason:
+            upsert_subbullet(lines, idx, 'blocked', args.reason)
 
-        write_file(file_path, lines, normalize=is_backlog(file_path))
+        write_file(args.file, lines, normalize=is_backlog(args.file))
 
 
 if __name__ == '__main__':
